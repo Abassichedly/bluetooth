@@ -8,18 +8,26 @@ class BluetoothController extends GetxController {
   bool isScanning = false;
   Timer? scanTimer;
   final associationResponse = ''.obs;
+BluetoothCharacteristic? _selectedCharacteristic;
 
-
-  // Stream controller for device association response
-  final _deviceAssociationResponse = ''.obs;
-  Stream<String> get deviceAssociationResponse => _deviceAssociationResponse.stream;
-
-  // Method to update device association response
-  void updateAssociationResponse(String message) {
-    print('Updating association response: $message');
-    associationResponse.value = message;
+  void updateCharacteristic(BluetoothCharacteristic characteristic) {
+    _selectedCharacteristic = characteristic;
+    _startListeningForNotifications();
   }
 
+  Future<void> _startListeningForNotifications() async {
+    if (_selectedCharacteristic == null || !_selectedCharacteristic!.isNotifying) {
+      try {
+        await _selectedCharacteristic!.setNotifyValue(true);
+        _selectedCharacteristic!.value.listen((value) {
+          // Handle received data here
+          print('Received data: ${value.toString()}');
+        });
+      } catch (e) {
+        updateAssociationResponse("Failed to start listening for notifications: $e");
+      }
+    }
+  }
   // Method to scan for Bluetooth devices
   Future<void> scanDevices() async {
     if (!isScanning) {
@@ -45,6 +53,11 @@ class BluetoothController extends GetxController {
   // Method to update the scan status
   void updateScanStatus() {
     update();
+  }
+
+  // Method to update the association response
+  void updateAssociationResponse(String message) {
+    associationResponse.value = message;
   }
 
   // Stream of scan results
