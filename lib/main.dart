@@ -24,7 +24,7 @@ class App extends StatelessWidget {
         useMaterial3: true,
         primarySwatch: Colors.indigo,
       ),
-      home: Home(),
+      home: Devices(),
     );
   }
 }

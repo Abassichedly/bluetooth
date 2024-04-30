@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get/get.dart';
 
@@ -8,7 +9,7 @@ class BluetoothController extends GetxController {
   bool isScanning = false;
   Timer? scanTimer;
   final associationResponse = ''.obs;
-BluetoothCharacteristic? _selectedCharacteristic;
+  BluetoothCharacteristic? _selectedCharacteristic;
 
   void updateCharacteristic(BluetoothCharacteristic characteristic) {
     _selectedCharacteristic = characteristic;
@@ -28,6 +29,7 @@ BluetoothCharacteristic? _selectedCharacteristic;
       }
     }
   }
+
   // Method to scan for Bluetooth devices
   Future<void> scanDevices() async {
     if (!isScanning) {
@@ -62,4 +64,20 @@ BluetoothCharacteristic? _selectedCharacteristic;
 
   // Stream of scan results
   Stream<List<ScanResult>> get scanResults => flutterBlue.scanResults;
+
+  // Method to get the state of a Bluetooth device
+  String getDeviceStateString(BluetoothDeviceState state) {
+    switch (state) {
+      case BluetoothDeviceState.connected:
+        return 'Connected';
+      case BluetoothDeviceState.connecting:
+        return 'Connecting';
+      case BluetoothDeviceState.disconnecting:
+        return 'Disconnecting';
+      case BluetoothDeviceState.disconnected:
+        return 'Disconnected';
+      default:
+        return 'Unknown';
+    }
+  }
 }
